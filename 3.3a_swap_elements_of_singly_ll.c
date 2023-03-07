@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#define NULLA ((void*)0)
+#define NULLA ((void*)0) //replacement to NULL (corresponding to the Hindi slang)
 typedef struct Node{
 	int data;
 	struct Node* next;
@@ -20,9 +20,8 @@ position createNode(int data){
 	return new;
 }
 
-linkedlist createRandomLinkedList(int size, int seed){
+linkedlist createRandomLinkedList(int size, unsigned int seed){
 	srand(seed);
-	
 	linkedlist l = NULL;
 	position p;
 	p = createNode(rand());
@@ -45,28 +44,63 @@ void printElements(linkedlist l){
 	}
 }
 
-/// @brief it swaps the element at positional 1-indexed element with the one to the next to it
+position findPrevious(position p, linkedlist l){
+	position q = l;
+	if(q == NULL){
+		return NULL;
+	}
+	while(q -> next != p){
+		q = q -> next;
+	}
+	return q;
+}
+
+/// @brief it swaps the element at positional 0-indexed element with the one to the next to it
 /// @param pi : positional_index
 /// @param l : the linkedlist
-void swap_elements(int pi, linkedlist l){
+linkedlist swap_elements(int pi, linkedlist l){
 	int iter = 0;
 	position p = l;
 	
-	if(p == NULL) return;
-	if(p -> next == NULL) return;
-	while(p -> next != NULL){
-		if(iter == pi) break;
+	//if the list is empty, do nothing
+	if(p == NULLA) return l;
+	//if the list has only one element, do nothing
+	if(p -> next == NULLA) return l;
+	//else find the pointer corresponding to the positional index pi
+	while(p -> next != NULLA){
+		if(iter == pi) {
+			//printf("Got till %d\n", p->data); //Debug print
+			break;
+		}
 		p = p->next;
+		// printf("iter = %d\n", iter); //Debug print
+
 		iter++;
 	}
-	p->next = 
-	
+	//Again check if the element to the next of p is not null, which means that p is not the last element
+	if(p->next == NULLA) return l;
+	//p is the box that is to be swapped with its successor
+	position q = findPrevious(p, l);
+	//printf("Previous to %d is %d\n", p->data, q->data); //Debug print
+	position r = p->next;
+	position s = r->next;
+	//so we have q p r s and we have to convert it to q r p s
+	q->next = r;
+	r->next = p;
+	p->next = s;
+	return l;
 }
 
 int main(){
 	linkedlist l = createRandomLinkedList(10, 100);
+	printf("Before Swapping: \n");
 	printElements(l);
-	
-	
+
+	l = swap_elements(2, l); //3rd element will be swapped with the 4th (0-indexed)
+
+	printf("\nAfter Swapping: \n");
+	printElements(l);
+
+	printf("Woohoo!! :)\n");
 	return 0;
 }
